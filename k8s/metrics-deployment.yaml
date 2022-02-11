@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/runtime: golang
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/name: metrics
+  name: metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: metrics
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        app.openshift.io/runtime: golang
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: metrics
+    spec:
+      imagePullSecrets:
+        - name: docker
+      containers:
+        - envFrom:
+          - configMapRef: 
+              name: metrics-env
+          - secretRef:
+              name: github-token        
+          image: infinityworks/github-exporter:latest
+          name: metrics
+          ports:
+            - containerPort: 9171
+          resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/connects-to: prometheus
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/name: grafana
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: grafana
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        app.openshift.io/connects-to: prometheus
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: grafana
+    spec:
+      imagePullSecrets:
+        - name: docker
+      containers:
+        - env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SECURITY_ADMIN_PASSWORD
+                  name: grafana-config-monitoring
+            - name: GF_USERS_ALLOW_SIGN_UP
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_USERS_ALLOW_SIGN_UP
+                  name: grafana-config-monitoring
+          image: grafana/grafana
+          name: grafana
+          ports:
+            - containerPort: 3000
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-data
+            - name: grafana-config-datasources
+              mountPath: /etc/grafana/provisioning/datasources/
+            - name: grafana-config-dashboard
+              mountPath: /etc/grafana/provisioning/dashboards/
+      restartPolicy: Always
+      volumes:
+        - name: grafana-data
+          persistentVolumeClaim:
+            claimName: grafana-data
+        - name: grafana-config-datasources
+          configMap:
+            name: grafana-config-datasources
+        - name: grafana-config-dashboard
+          configMap:
+            name: grafana-config-dashboard 
+            items:
+            - key: dashboard.yml
+              path: dashboard.yml
+            - key: RH-stats.json
+              path: RH-stats.json
+status: {}

@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- k8s/grafana-config-monitoring-configmap.yaml
+- k8s/grafana-data-persistentvolumeclaim.yaml
+- k8s/grafana-deployment.yaml
+- k8s/grafana-route.yaml
+- k8s/grafana-service.yaml
+- k8s/metrics-env-configmap.yaml
+- k8s/metrics-deployment.yaml
+- k8s/metrics-service.yaml
+- k8s/prometheus-configmap.yaml
+- k8s/prometheus-data-persistentvolumeclaim.yaml
+- k8s/prometheus-deployment.yaml
+- k8s/prometheus-service.yaml
+configMapGenerator:
+  - name: grafana-config-dashboard
+    files:
+      - grafana/provisioning/dashboards/dashboard.yml
+      - grafana/provisioning/dashboards/RH-stats.json
+  - name: grafana-config-datasources
+    files:
+      - grafana/provisioning/datasources/datasource.yml
+commonLabels:
+  app.kubernetes.io/part-of: github-monitor
