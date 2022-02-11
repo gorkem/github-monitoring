@@ -11,4 +11,4 @@ Uses [kustomize](https://kustomize.io/) templates to define deployments. You nee
 
 ## How to update the list of repositories that are watched.
 
-3. Update the values of `REPOS` on `k8s/metrics-env-configmap.yaml`
+Update the values of `REPOS` on `k8s/metrics-env-configmap.yaml`
